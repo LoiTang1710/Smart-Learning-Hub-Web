@@ -4,158 +4,100 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
-import { RegisterBody, RegisterBodyType } from "@/src/schemaValidations/auth.schema";
 
+import {
+  RegisterBody,
+  RegisterBodyType,
+} from "@/src/schemaValidation/auth.schema";
+import envConfig from "@/src/config";
 
 const RegisterForm = () => {
   const form = useForm<RegisterBodyType>({
     resolver: zodResolver(RegisterBody),
     defaultValues: {
-      email: '',
-      username: '',
-      password: '',
-      confirmPassword: '',
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
     },
   });
+  const formRegisterFields: Array<{
+    name: keyof RegisterBodyType;
+    label: string;
+    type: string;
+    placeholder: string;
+  }> = [
+    {
+      name: "username",
+      label: "Username",
+      type: "text",
+      placeholder: "Nguyễn Văn A",
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "example@gmail.com",
+    },
+    {
+      name: "password",
+      label: "Password",
+      type: "password",
+      placeholder: "********",
+    },
+    {
+      name: "confirmPassword",
+      label: "Confirm Password",
+      type: "password",
+      placeholder: "********",
+    },
+  ];
 
-  function onSubmit(values: FormValue) {
-    console.log(values);
+  async function onSubmit(values: RegisterBodyType) {
+    await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`, {
+      body: JSON.stringify(values),
+      headers: {
+        "Content-type": "Application/json",
+      },
+      method: "POST",
+    }).then((res) => res.json);
   }
   return (
-    <div>
-      <Card className="w-full sm:max-w-md">
-        <CardHeader>
-          <CardTitle>Tạo tài khoản mới</CardTitle>
-          <CardDescription>Bắt đầu hành trình học tập của bạn</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
-            <FieldGroup className="gap-2">
-              <Controller
-                name="username"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="form-rhf-username">
-                      Họ và tên
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="form-rhf-username"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Nguyễn Văn A"
-                      autoComplete="off"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
+    <form id="form-rhf-register" onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup className="gap-2">
+        {formRegisterFields.map((item) => (
+          <Controller
+            key={item.name}
+            name={item.name}
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid} className="gap-1 mt-2">
+                <FieldLabel htmlFor={`form-rhf-register-${item.name}`}>
+                  {item.label}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={`form-rhf-${item.name}`}
+                  type={item.type}
+                  placeholder={item.placeholder}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
                 )}
-              />
-              {/* End Username Input */}
-              <Controller
-                name="email"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="form-rhf-email">Email</FieldLabel>
-                    <Input
-                      {...field}
-                      id="form-rhf-email"
-                      placeholder="email@example.com"
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-              {/* End Email Input */}
-              <Controller
-                name="password"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="form-rhf-password">
-                      Mật khẩu
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="form-rhf-password"
-                      placeholder="********"
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-              {/* End Password Input */}
-              <Controller
-                name="confirmPassword"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="form-rhf-confirmPassword">
-                      Xác nhận mật khẩu
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="form-rhf-confirmPassword"
-                      placeholder="********"
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-              {/* End ConfirmPassword Input */}
-            </FieldGroup>
-          </form>
-        </CardContent>
-        <CardFooter>
-          <Field orientation="horizontal">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => form.reset()}
-            >
-              Reset
-            </Button>
-            <Button type="submit" form="form-rhf-demo">
-              Submit
-            </Button>
-          </Field>
-        </CardFooter>
-      </Card>
-    </div>
+              </Field>
+            )}
+          />
+        ))}
+      </FieldGroup>
+    </form>
   );
 };
 

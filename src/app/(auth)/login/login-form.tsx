@@ -3,6 +3,7 @@ import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
+import { toast } from "sonner";
 
 import {
   Field,
@@ -12,34 +13,23 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-import {
-  RegisterBody,
-  RegisterBodyType,
-} from "@/src/schemaValidation/auth.schema";
+import { LoginBody, LoginBodyType } from "@/src/schemaValidation/auth.schema";
 import envConfig from "@/src/config";
 
-const RegisterForm = () => {
-  const form = useForm<RegisterBodyType>({
-    resolver: zodResolver(RegisterBody),
+const LoginForm = () => {
+  const form = useForm<LoginBodyType>({
+    resolver: zodResolver(LoginBody),
     defaultValues: {
       email: "",
-      fullName: "",
       password: "",
-      confirmPassword: "",
     },
   });
-  const formRegisterFields: Array<{
-    name: keyof RegisterBodyType;
+  const formLoginFields: Array<{
+    name: keyof LoginBodyType;
     label: string;
     type: string;
     placeholder: string;
   }> = [
-    {
-      name: "fullName",
-      label: "Họ và tên",
-      type: "text",
-      placeholder: "Nguyễn Văn A",
-    },
     {
       name: "email",
       label: "Email",
@@ -52,35 +42,58 @@ const RegisterForm = () => {
       type: "password",
       placeholder: "********",
     },
-    {
-      name: "confirmPassword",
-      label: "Confirm Password",
-      type: "password",
-      placeholder: "********",
-    },
   ];
 
-  async function onSubmit(values: RegisterBodyType) {
-    const result = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`, {
-      body: JSON.stringify(values),
-      headers: {
-        "Content-type": "Application/json",
-      },
-      method: "POST",
-    }).then((res) => res.json());
-    console.log(result)
+  async function onSubmit(values: LoginBodyType) {
+    try {
+      const result = await fetch(
+        `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/login`,
+        {
+          body: JSON.stringify(values),
+          headers: {
+            "Content-Type": "Application/json",
+          },
+          method: "POST",
+        },
+      ).then(async (res) => {
+        const payload = await res.json();
+        const data = {
+          status: res.status,
+          payload,
+        };
+        if (!res.ok) throw data;
+        return data;
+      });
+    } catch (error: unknown) {
+      const errorResponse = error as {
+        status: number;
+        payload: {
+          error: string;
+          message: string;
+        };
+      };
+      if (errorResponse.status === 401) {
+        form.setError("password", {
+          type: "server",
+          message: errorResponse.payload.message,
+        });
+      }
+      else {
+        toast.error(errorResponse.payload.message)
+      }
+    }
   }
   return (
-    <form id="form-rhf-register" onSubmit={form.handleSubmit(onSubmit)}>
+    <form id="form-rhf-login" onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className="gap-2">
-        {formRegisterFields.map((item) => (
+        {formLoginFields.map((item) => (
           <Controller
             key={item.name}
             name={item.name}
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1 mt-2">
-                <FieldLabel htmlFor={`form-rhf-register-${item.name}`}>
+                <FieldLabel htmlFor={`form-rhf-login-${item.name}`}>
                   {item.label}
                 </FieldLabel>
                 <Input
@@ -101,4 +114,4 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default LoginForm;

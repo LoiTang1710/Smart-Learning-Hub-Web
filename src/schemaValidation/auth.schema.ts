@@ -2,7 +2,7 @@ import * as z from "zod";
 
 export const RegisterBody = z
   .object({
-    username: z.string().trim().max(50),
+    fullName: z.string().trim().max(50),
     email: z.email(),
     password: z.string().min(6).max(100),
     confirmPassword: z.string().min(6).max(100),
@@ -18,3 +18,11 @@ export const RegisterBody = z
     }
   });
 export type RegisterBodyType = z.infer<typeof RegisterBody>;
+
+export const LoginBody = z
+  .object({
+    email: z.email(),
+    password: z.string(),
+  })
+  .strict();
+export type LoginBodyType = z.infer<typeof LoginBody>;

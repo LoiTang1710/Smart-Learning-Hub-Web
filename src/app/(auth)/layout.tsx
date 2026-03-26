@@ -1,16 +1,13 @@
 import React from "react";
-import RegisterPage from "./register/page";
-import LoginPage from "./login/page";
 
-
-const AuthLayout = () => {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div>
-      <LoginPage />
-      <RegisterPage />
-  
+      {children}
     </div>
   );
-};
-
-export default AuthLayout;
+}

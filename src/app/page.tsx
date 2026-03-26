@@ -1,4 +1,3 @@
-
 export default function Home() {
-  return <></>;
+  return <>Chào mừng quay trở lại</>;
 }

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import LoginForm from "./login-form";
+import Link from "next/link";
 
 const LoginPage = () => {
   return (
@@ -27,15 +28,21 @@ const LoginPage = () => {
           <LoginForm />
         </CardContent>
         <CardFooter>
-          <Field orientation="horizontal">
+          <Field orientation="vertical">
             <Button
               type="submit"
               form="form-rhf-login"
               variant="default"
-              className="w-full py-5 bg-[#F39C12] hover:bg-[#E67E22]"
+              className="ct-auth-card-button"
             >
               Đăng nhập
             </Button>
+            <div className="ct-auth-asking-father">
+              <span>Bạn chưa có tài khoản?</span>
+              <Link href="/register" className="ct-auth-asking-input">
+                Đăng ký
+              </Link>
+            </div>
           </Field>
         </CardFooter>
       </Card>

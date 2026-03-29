@@ -46,14 +46,14 @@ const LoginForm = () => {
 
   async function onSubmit(values: LoginBodyType) {
     try {
-      const accessToken = localStorage.getItem("accessToken");
+      // const accessToken = localStorage.getItem("accessToken");
       const result = await fetch(
         `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/login`,
         {
           body: JSON.stringify(values),
           headers: {
             "Content-Type": "Application/json",
-            Authorization: `Bearer ${accessToken}`,
+            // Authorization: `Bearer ${accessToken}`,
           },
           method: "POST",
           credentials: "include",
@@ -69,8 +69,6 @@ const LoginForm = () => {
       });
       console.log(result);
       toast.success(result.payload.message);
-      localStorage.setItem("accessToken", result.payload.data.accessToken);
-      localStorage.setItem("refreshToken", result.payload.data.refreshToken);
       localStorage.setItem(
         "userInfo",
         JSON.stringify(result.payload.data.userInfo),

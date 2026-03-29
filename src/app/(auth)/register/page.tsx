@@ -1,4 +1,3 @@
-
 import RegisterForm from "./register-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
+import Link from "next/link";
 
 const RegisterPage = () => {
   return (
@@ -27,15 +27,21 @@ const RegisterPage = () => {
           <RegisterForm />
         </CardContent>
         <CardFooter>
-          <Field orientation="horizontal">
+          <Field orientation="vertical">
             <Button
               type="submit"
               form="form-rhf-register"
               variant="default"
-              className="w-full py-5 bg-[#F39C12] hover:bg-[#E67E22]"
+              className="ct-auth-card-button"
             >
               Tạo tài khoản
             </Button>
+            <div className="ct-auth-asking-father">
+              <span>Bạn đã có tài khoản?</span>
+              <Link className="ct-auth-asking-input" href="/login">
+                Đăng nhập
+              </Link>
+            </div>
           </Field>
         </CardFooter>
       </Card>

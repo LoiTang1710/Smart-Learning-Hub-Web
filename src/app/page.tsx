@@ -1,3 +1,9 @@
+import Dashboard from "./(dashboard)/page";
+
 export default function Home() {
-  return <>Chào mừng quay trở lại</>;
+  return (
+    <div className="h-screen">
+      <Dashboard />
+    </div>
+  );
 }

@@ -17,8 +17,11 @@ import {
   RegisterBodyType,
 } from "@/src/schemaValidation/auth.schema";
 import envConfig from "@/src/config";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const RegisterForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const form = useForm<RegisterBodyType>({
     resolver: zodResolver(RegisterBody),
     defaultValues: {
@@ -50,25 +53,28 @@ const RegisterForm = () => {
       name: "password",
       label: "Password",
       type: "password",
-      placeholder: "********",
+      placeholder: "••••••••`",
     },
     {
       name: "confirmPassword",
       label: "Confirm Password",
-      type: "password",
-      placeholder: "********",
+      type: "confirmPassword",
+      placeholder: "••••••••`",
     },
   ];
 
   async function onSubmit(values: RegisterBodyType) {
-    const result = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`, {
-      body: JSON.stringify(values),
-      headers: {
-        "Content-type": "Application/json",
+    const result = await fetch(
+      `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`,
+      {
+        body: JSON.stringify(values),
+        headers: {
+          "Content-type": "Application/json",
+        },
+        method: "POST",
       },
-      method: "POST",
-    }).then((res) => res.json());
-    console.log(result)
+    ).then((res) => res.json());
+    console.log(result);
   }
   return (
     <form id="form-rhf-register" onSubmit={form.handleSubmit(onSubmit)}>
@@ -83,12 +89,33 @@ const RegisterForm = () => {
                 <FieldLabel htmlFor={`form-rhf-register-${item.name}`}>
                   {item.label}
                 </FieldLabel>
-                <Input
-                  {...field}
-                  id={`form-rhf-${item.name}`}
-                  type={item.type}
-                  placeholder={item.placeholder}
-                />
+                <div className="relative">
+                  <Input
+                    {...field}
+                    id={`form-rhf-${item.name}`}
+                    type={(item.type === "password" && showPassword) ? "text" : item.type}
+                    placeholder={item.placeholder}
+                  />
+                  {item.type === "password" && (
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <Eye
+                          size={20}
+                          className="opacity-40 hover:opacity-100"
+                        />
+                      ) : (
+                        <EyeOff
+                          size={20}
+                          className="opacity-40 hover:opacity-100"
+                        />
+                      )}
+                    </button>
+                  )}
+                </div>
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}

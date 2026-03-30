@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
@@ -14,8 +14,10 @@ import { Input } from "@/components/ui/input";
 import { LoginBody, LoginBodyType } from "@/src/schemaValidation/auth.schema";
 import envConfig from "@/src/config";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 
 const LoginForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -40,11 +42,12 @@ const LoginForm = () => {
       name: "password",
       label: "Password",
       type: "password",
-      placeholder: "********",
+      placeholder: "••••••••",
     },
   ];
 
   async function onSubmit(values: LoginBodyType) {
+    
     try {
       // const accessToken = localStorage.getItem("accessToken");
       const result = await fetch(
@@ -108,12 +111,39 @@ const LoginForm = () => {
                 <FieldLabel htmlFor={`form-rhf-login-${item.name}`}>
                   {item.label}
                 </FieldLabel>
-                <Input
-                  {...field}
-                  id={`form-rhf-${item.name}`}
-                  type={item.type}
-                  placeholder={item.placeholder}
-                />
+                <div className="relative">
+                  <Input
+                    {...field}
+                    id={`form-rhf-${item.name}`}
+                    type={
+                      item.type === "password" && showPassword
+                        ? "text"
+                        : item.type
+                    }
+                    placeholder={item.placeholder}
+                    className="pr-10"
+                  />
+                  {item.type === "password" && (
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <Eye
+                          size={20}
+                          className="opacity-40 hover:opacity-100"
+                        />
+                      ) : (
+                        <EyeOff
+                          size={20}
+                          className="opacity-40 hover:opacity-100"
+                        />
+                      )}
+                      {/* <Eye size={20} className="opacity-40 hover:opacity-100" /> */}
+                    </button>
+                  )}
+                </div>
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
